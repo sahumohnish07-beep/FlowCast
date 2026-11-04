@@ -1,0 +1,27 @@
+# FlowCast Dependencies
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Core Data Science & Numerical Computation
+numpy>=2.0.0
+pandas>=3.0.0
+scipy>=1.15.0
+
+# Machine Learning & Deep Learning
+scikit-learn>=1.6.0
+xgboost>=3.0.0
+torch==2.15.0+cpu
+
+# Web API & Serving
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.9.0
+
+# Dashboard & Geospatial Visualizations
+streamlit>=1.40.0
+folium>=0.18.0
+plotly>=6.0.0
+
+# Utilities, Environment & Testing
+python-dotenv>=1.0.0
+pytest>=8.0.0
+requests>=2.32.0
