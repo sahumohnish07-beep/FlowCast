@@ -37,3 +37,4 @@ def test_project_directories_exist():
     for d in expected_dirs:
         dir_path = root / d
         assert dir_path.exists(), f"Expected directory does not exist: {d}"
+

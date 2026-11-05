@@ -53,10 +53,13 @@ FlowCast/
   - Dependency configuration (`requirements.txt`) established
   - Git repository, `.gitignore`, and `.env.example` configured
   - Initial synchronization to GitHub main branch
-- [ ] **Phase 1: Data Ingestion & Exploratory Data Analysis (EDA)**
-  - Synthetic / real-world sensor, weather, and calendar data generation / ingestion
-  - Data cleaning, missing-value imputation, and schema validation
-  - Exploratory analysis of volume distributions, peak-hour behaviors, and weather correlations
+- [x] **Phase 1: Data Collection & Ingestion**
+  - Metro Interstate Traffic Volume dataset automated downloader (`src/data/traffic_loader.py`, 48,204 rows)
+  - Open-Meteo Historical Weather Archive client (`src/data/weather_client.py`, 52,584 hourly observations)
+  - Statutory holiday and calendar feature synthesizer (`src/data/calendar_generator.py`, 5,205 calendar days)
+  - Unified reproducible download script (`src/data/download.py`) saving to `data/raw/`
+  - Data sources documentation authored in `docs/data_sources.md`
+  - Automated test coverage via `tests/test_data_collection.py`
 - [ ] **Phase 2: Feature Engineering & Preprocessing**
   - Temporal encoding (hour-of-day, day-of-week, cyclical sine/cosine transforms)
   - Time-series lag features (t-15m, t-30m, t-1h, t-24h) and moving window aggregations
