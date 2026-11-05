@@ -78,3 +78,4 @@ def test_raw_weather_file_if_present():
     assert "date_time" in df.columns
     assert "temperature_2m" in df.columns
     assert pd.api.types.is_datetime64_any_dtype(df["date_time"])
+

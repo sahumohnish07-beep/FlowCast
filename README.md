@@ -60,11 +60,14 @@ FlowCast/
   - Unified reproducible download script (`src/data/download.py`) saving to `data/raw/`
   - Data sources documentation authored in `docs/data_sources.md`
   - Automated test coverage via `tests/test_data_collection.py`
-- [ ] **Phase 2: Feature Engineering & Preprocessing**
-  - Temporal encoding (hour-of-day, day-of-week, cyclical sine/cosine transforms)
-  - Time-series lag features (t-15m, t-30m, t-1h, t-24h) and moving window aggregations
-  - Weather severity indices & holiday calendar flags
-  - Strict chronological train/validation/test splitting
+- [x] **Phase 2: Exploratory Data Analysis (EDA) & Preprocessing**
+  - Interactive notebook `notebooks/01_eda.ipynb` analyzing volume dynamics, diurnal curves, weather, and holidays
+  - High-resolution visualizations saved to `docs/images/` (`traffic_by_hour.png`, `traffic_by_weekday.png`, `traffic_by_weather.png`, `traffic_by_holiday.png`, `correlation_heatmap.png`)
+  - Robust sensor cleaning and multimodal fusion pipeline in `src/features/preprocess.py`
+  - 55 engineered features: cyclical temporal sine/cosine transforms, weather severity scores, leak-free lag features (1h, 2h, 3h, 24h, 168h), and rolling aggregations (3h, 6h, 24h)
+  - Multi-task targets modeled: continuous `traffic_volume`, categorical `congestion_level`, BPR corridor `travel_time_min`, and localized `accident_risk_index`
+  - Chronological time-based data split saved to `data/processed/`: Train (37,071 rows, 2012–2016), Val (8,760 rows, 2017), Test (6,552 rows, 2018)
+  - Automated test coverage via `tests/test_preprocessing.py`
 - [ ] **Phase 3: Classical & Tree-Based Modeling (XGBoost / Scikit-Learn)**
   - Baseline linear/ridge models
   - XGBoost regressors and classifiers for traffic volume and congestion severity
@@ -87,6 +90,19 @@ FlowCast/
 - [ ] **Phase 8: End-to-End System Testing & Verification**
   - Automated unit and integration tests via pytest
   - System verification, load testing, and final documentation polish
+
+---
+
+## 📊 Key EDA Findings & Insights
+
+- **Bimodal Commute Curves**: Weekdays exhibit pronounced twin peaks during the morning rush (7:00–9:00 AM, $\sim 5,100\text{ veh/hr}$) and evening rush (4:00–6:00 PM, $\sim 5,600\text{ veh/hr}$). Weekends transition into a smoother unimodal profile peaking between 1:00 PM and 4:00 PM ($\sim 4,200\text{ veh/hr}$).
+- **Strong Temporal Autocorrelation**: Lag variables `traffic_lag_1h` ($r = 0.88$) and `traffic_lag_24h` ($r = 0.85$) represent dominant predictive signals, validating our time-series sequence approach.
+- **Statutory Holiday Drop**: National holidays produce an average traffic volume drop of $\sim 32\%$ ($\sim 2,270\text{ veh/hr}$ vs. $\sim 3,340\text{ veh/hr}$ on standard days), while holiday eves record extended afternoon outbound surges.
+- **Weather Impedance**: Adverse conditions (heavy snow, freezing rain, low visibility) suppress maximum vehicular capacity while driving up modeled travel delays and localized accident risks.
+- **Zero-Leakage Splitting**: Strictly chronological partitioning guarantees realistic evaluation on untouched 2018 test data:
+  - **Train**: October 2012 – December 2016 (37,071 rows, $\sim 71\%$)
+  - **Validation**: January 2017 – December 2017 (8,760 rows, $\sim 17\%$)
+  - **Test**: January 2018 – September 2018 (6,552 rows, $\sim 12\%$)
 
 ---
 

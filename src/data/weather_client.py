@@ -118,3 +118,4 @@ def load_weather_data(
     df = df.sort_values(by="date_time").reset_index(drop=True)
 
     return df
+

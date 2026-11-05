@@ -111,3 +111,4 @@ def load_traffic_data(file_path: str | Path = "data/raw/metro_traffic_raw.csv") 
     df = df.sort_values(by="date_time").reset_index(drop=True)
 
     return df
+
