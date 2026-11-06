@@ -63,3 +63,4 @@ def test_accident_risk_classifier_artifact():
     assert len(preds) == 3
     assert set(preds).issubset({0, 1})
     assert ((probs >= 0.0) & (probs <= 1.0)).all()
+

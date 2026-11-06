@@ -91,10 +91,12 @@ FlowCast/
   - Serialized model artifacts saved in `models/` (`congestion_classifier.joblib`, `travel_time_model.joblib`, `accident_risk_classifier.joblib`)
   - Diagnostic visualizations saved to `docs/images/` (`congestion_confusion_matrix.png`, `travel_time_predictions.png`, `accident_risk_roc_curve.png`)
   - Test suite coverage verified with 20 passing tests in `tests/test_extra_modules.py`
-- [ ] **Phase 6: REST API Development (FastAPI)**
-  - Async FastAPI endpoints for single-point and batch predictions
-  - Pydantic input validation and health check endpoints
-  - Swagger/OpenAPI documentation
+- [x] **Phase 6: REST API Development (FastAPI)**
+  - Built production FastAPI application in `src/api/main.py` with lifespan model loading and CORS support
+  - Implemented 6 core endpoints: `GET /health`, `POST /predict/traffic`, `POST /predict/congestion`, `POST /predict/travel-time`, `POST /predict/accident-risk`, and `GET /recommendations`
+  - Validated with robust Pydantic schemas in `src/api/schemas.py` and auto-generated OpenAPI documentation
+  - Rule-based operational decision engine providing tactical guidance for traffic management authorities
+  - Automated unit test suite verified with 7 passing tests in `tests/test_api.py` (27 total tests passing repository-wide)
 - [ ] **Phase 7: Interactive Dashboard & Geospatial Visualization**
   - Streamlit dashboard layout with multi-page navigation
   - Folium interactive road network maps with traffic heatmaps
@@ -145,6 +147,28 @@ Both PyTorch recurrent networks take a 24-hour historical window and forecast tr
 
 > [!NOTE]
 > Serialized models and scalers are stored in `models/` (`best_baseline_model.joblib`, `best_traffic_gru.pt`, `congestion_classifier.joblib`, `travel_time_model.joblib`, `accident_risk_classifier.joblib`, and `scaler.joblib`). All diagnostic plots and evaluation metrics are cataloged in `docs/images/` and `docs/extra_modules_results.csv`.
+
+---
+
+## ⚡ FastAPI Backend Service & RESTful Endpoints
+
+FlowCast provides high-throughput async inference endpoints documented with OpenAPI (Swagger UI accessible at `http://localhost:8000/docs`):
+
+### Endpoint Reference
+
+| Method | Endpoint | Description | Sample Request / Parameters | Key Response Payload |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/health` | Service readiness & model health | None | `{"status": "healthy", "models_loaded": {...}}` |
+| `POST` | `/predict/traffic` | Forecast hourly vehicular volume | `{"hour": 8, "day_of_week": 1, ...}` | `{"predicted_traffic_volume": 4820.5, "unit": "veh/hr"}` |
+| `POST` | `/predict/congestion` | Classify congestion (Low / Medium / High) | `{"hour": 17, "day_of_week": 2, ...}` | `{"predicted_congestion_level": "High", "probabilities": {...}}` |
+| `POST` | `/predict/travel-time` | Estimate corridor transit time & delays | `{"hour": 17, "traffic_lag_1h": 5100, ...}` | `{"estimated_travel_time_min": 21.4, "delay_min": 7.55}` |
+| `POST` | `/predict/accident-risk` | High-risk hazard alert evaluation | `{"temp_c": -4, "precipitation": 2.5, ...}` | `{"is_high_risk": true, "risk_level": "Critical"}` |
+| `GET` | `/recommendations` | Tactical advisory for operations centers | `?congestion_level=High&accident_risk=true` | `{"recommendations": [{"action": "Deploy adaptive signal timing", ...}]}` |
+
+### Launching the Backend Server
+```bash
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
 ---
 
