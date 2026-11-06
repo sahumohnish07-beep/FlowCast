@@ -3,6 +3,7 @@
 from pathlib import Path
 import joblib
 import numpy as np
+import pandas as pd
 import pytest
 
 from src.models.baseline import (
@@ -68,4 +69,34 @@ def test_best_model_artifact_loading():
     preds = bundle["model"].predict(X_sample)
     assert len(preds) == 10
     assert (preds >= 0).all()
+
+
+def test_baseline_model_prediction_range():
+    """Verify that predictions on test set stay within plausible freeway capacities."""
+    artifact_path = Path("models/best_baseline_model.joblib")
+    if not artifact_path.exists():
+        pytest.skip("models/best_baseline_model.joblib not found.")
+
+    bundle = joblib.load(artifact_path)
+    _, _, test_df = load_datasets()
+    X_sample = test_df[bundle["feature_names"]].head(100)
+    preds = bundle["model"].predict(X_sample)
+
+    assert (preds >= 0.0).all()
+    # Realistic highway maximum for 4 lanes is 8000-9000 veh/hr
+    assert (preds <= 8500.0).all()
+
+
+def test_baseline_evaluation_leaderboard_file():
+    """Verify that docs/baseline_results.csv is formatted properly with all required metrics."""
+    results_path = Path("docs/baseline_results.csv")
+    assert results_path.exists(), "Leaderboard file docs/baseline_results.csv missing."
+
+    df = pd.read_csv(results_path)
+    expected_cols = ["Model", "Test_MAE", "Test_RMSE", "Test_R2"]
+    for col in expected_cols:
+        assert col in df.columns, f"Missing expected column {col} in docs/baseline_results.csv"
+
+    assert len(df) >= 3, "Expected at least 3 models in docs/baseline_results.csv"
+
 

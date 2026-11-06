@@ -100,3 +100,49 @@ def test_time_based_split_chronology():
     assert len(df_val) > 8000
     assert len(df_test) > 6000
 
+
+def test_cyclical_trigonometric_bounds():
+    """Verify that sine/cosine temporal features lie on the unit circle."""
+    full_path = Path("data/processed/full.parquet")
+    if not full_path.exists():
+        pytest.skip("data/processed/full.parquet missing.")
+
+    df = pd.read_parquet(full_path)
+    hour_norm = df["hour_sin"] ** 2 + df["hour_cos"] ** 2
+    day_norm = df["day_sin"] ** 2 + df["day_cos"] ** 2
+    month_norm = df["month_sin"] ** 2 + df["month_cos"] ** 2
+
+    np.testing.assert_allclose(hour_norm, 1.0, atol=1e-5)
+    np.testing.assert_allclose(day_norm, 1.0, atol=1e-5)
+    np.testing.assert_allclose(month_norm, 1.0, atol=1e-5)
+
+
+def test_bpr_travel_time_formula():
+    """Verify BPR travel time function physics: T = T0 * (1 + alpha * (V/C)^beta)."""
+    full_path = Path("data/processed/full.parquet")
+    if not full_path.exists():
+        pytest.skip("data/processed/full.parquet missing.")
+
+    df = pd.read_parquet(full_path)
+    # T0 is 15 miles / 65 mph * 60 = 13.846 minutes
+    t0 = 15.0 / 65.0 * 60.0
+
+    # Travel time must always be greater than or equal to free-flow time
+    assert (df["travel_time_min"] >= t0 - 1e-4).all()
+
+    # High volume should have strictly higher travel time than zero flow
+    assert df.loc[df["traffic_volume"] > 5500, "travel_time_min"].mean() > df.loc[df["traffic_volume"] < 1000, "travel_time_min"].mean()
+
+
+def test_weather_severity_index_bounds():
+    """Verify weather severity index is strictly normalized in [0.0, 1.0]."""
+    full_path = Path("data/processed/full.parquet")
+    if not full_path.exists():
+        pytest.skip("data/processed/full.parquet missing.")
+
+    df = pd.read_parquet(full_path)
+    severity = df["weather_severity_index"]
+    assert severity.min() >= 0.0
+    assert severity.max() <= 1.0
+
+

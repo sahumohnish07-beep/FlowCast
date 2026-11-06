@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime, time
 import logging
 import math
+import os
 from pathlib import Path
 import sys
 
@@ -67,7 +68,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 
 # -----------------------------------------------------------------------------
@@ -711,3 +712,4 @@ with tabs[5]:
             st.plotly_chart(fig_r2, use_container_width=True)
     else:
         st.warning("Performance results file not found in docs/baseline_results.csv")
+

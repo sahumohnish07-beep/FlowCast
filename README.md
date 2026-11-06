@@ -22,6 +22,42 @@
 
 ## 🏗️ Project Architecture & Directory Layout
 
+### End-to-End System Workflow
+```mermaid
+flowchart TD
+    subgraph Data["Multimodal Ingestion Engine"]
+        D1["UCI Traffic Telemetry (48,204 rows)"] --> Ingest["Data Ingestion & Cleaning"]
+        D2["Open-Meteo Weather API (52,584 rows)"] --> Ingest
+        D3["Statutory Holiday Calendar (5,205 days)"] --> Ingest
+    end
+
+    subgraph Preprocess["Feature Engineering (Zero Leakage)"]
+        Ingest --> F1["Temporal & Cyclical Encoders (Sin/Cos)"]
+        Ingest --> F2["Autoregressive Lags (1h, 2h, 3h, 24h, 168h)"]
+        Ingest --> F3["Rolling Window Stats (3h, 6h, 24h)"]
+        Ingest --> F4["Weather Severity Index"]
+    end
+
+    subgraph Split["Chronological Partitioning"]
+        F1 & F2 & F3 & F4 --> S["Train (2012-2016) | Val (2017) | Test (2018)"]
+    end
+
+    subgraph Models["Predictive Model Hierarchy"]
+        S --> M1["XGBoost Regressor (Top Tabular, MAE: 146.60)"]
+        S --> M2["PyTorch Traffic GRU (Multi-Horizon 1-6h, MAE: 167.75)"]
+        S --> M3["Congestion Classifier (XGBoost, Macro F1: 0.9400)"]
+        S --> M4["BPR Travel Time Estimator (MAE: 0.098 min)"]
+        S --> M5["Accident Risk Classifier (SMOTE, Recall: 92.77%)"]
+    end
+
+    subgraph Serving["Operational Serving & Interface"]
+        M1 & M2 & M3 & M4 & M5 --> API["FastAPI Async REST Service (Port 8000)"]
+        API --> UI["Streamlit Geospatial Dashboard (Port 8501)"]
+        API & UI --> Docker["Docker Compose Multi-Container Stack"]
+    end
+```
+
+### Directory Structure
 ```text
 FlowCast/
 ├── data/
@@ -36,7 +72,11 @@ FlowCast/
 ├── dashboard/           # Streamlit user interface, custom styles, and Folium/Plotly views
 ├── models/              # Serialized model artifacts, weights, and scalers (.gitignored binaries)
 ├── tests/               # Pytest unit and integration test suites
-├── docs/                # Architecture diagrams, API specs, and project reports
+├── docs/                # Architecture diagrams, API specs, reports, and screenshots
+├── scripts/             # Visual capture scripts and benchmark generators
+├── Dockerfile           # Multi-service container specification
+├── docker-compose.yml   # Multi-container orchestration (API + Dashboard)
+├── .dockerignore        # Build exclusion rules
 ├── .env.example         # Template for environment configuration and secrets
 ├── .gitignore           # Git ignore rules for virtualenvs, binaries, data, and cache
 ├── requirements.txt     # Locked production and development dependencies
@@ -103,9 +143,12 @@ FlowCast/
   - Dynamic user sidebar inputs: simulation date, hour slider, temperature, precipitation, relative humidity, wind speed, holiday status, and historical lag volume sliders
   - Seamless FastAPI client integration with graceful, zero-downtime direct fallback loading serialized model bundles from `models/`
   - High-resolution dashboard visual previews saved to `docs/images/` (`dashboard_overview.png`, `dashboard_forecast.png`, `dashboard_map.png`)
-- [ ] **Phase 8: End-to-End System Testing & Verification**
-  - Automated unit and integration tests via pytest
-  - System verification, load testing, and final documentation polish
+- [x] **Phase 8: End-to-End System Testing & Verification (Final Polish)**
+  - Comprehensive unit test suite expanded across preprocessing, baseline models, sequence architectures, and auxiliary estimators (34/34 passing tests)
+  - Production containerization via multi-service `Dockerfile` and `docker-compose.yml`
+  - In-depth academic capstone report authored in `docs/project_report.md`
+  - System architecture visual workflow embedded with Mermaid diagrams
+  - Release tagging `v1.0` and final repository polish
 
 ---
 
@@ -242,9 +285,39 @@ cp .env.example .env
 pytest tests/
 ```
 
+### 6. Run with Docker Compose (Multi-Container Deployment)
+To launch the full production stack in isolated containers with automated health checks:
+```bash
+docker compose up --build
+```
+- **FastAPI Documentation & Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **FastAPI Health Status:** [http://localhost:8000/health](http://localhost:8000/health)
+- **Streamlit Geospatial Dashboard:** [http://localhost:8501](http://localhost:8501)
+
+---
+
+## 🔮 Future Work & Research Directions
+
+1. **Spatio-Temporal Graph Neural Networks (ST-GCN / Graph WaveNet):** Expand beyond single-corridor prediction to simultaneously model interconnected Twin Cities highway networks (I-35W, I-394, I-694, MN-36) using topology-aware graph convolutions.
+2. **Connected Vehicle Telemetry (V2X):** Ingest real-time automated vehicle speed profiles and micro-level waypoints to detect localized shockwaves before loop detectors register queue formation.
+3. **Deep Reinforcement Learning (DQN) for Signal Timing:** Interface FlowCast multi-horizon forecasts with SUMO (Simulation of Urban MObility) to train autonomous reinforcement learning agents for adaptive ramp metering and dynamic corridor speed limits.
+4. **Edge Deployment:** Containerize models for ultra-low latency inference on embedded roadway edge units (NVIDIA Jetson / Raspberry Pi 5).
+
+---
+
+## 📄 Documentation & Academic Capstone Report
+
+For full academic formulation, mathematical proofs, experimental loss progressions, and literature references, consult the dedicated submission report:
+- 📖 **Comprehensive Academic Project Report:** [`docs/project_report.md`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/project_report.md)
+- 📊 **Baseline Model Results:** [`docs/baseline_results.csv`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/baseline_results.csv)
+- 🚦 **Operational Modules Results:** [`docs/extra_modules_results.csv`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/extra_modules_results.csv)
+- 🌐 **Data Source Specifications:** [`docs/data_sources.md`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/data_sources.md)
+
 ---
 
 ## 👥 Authors & College Project Attribution
 
 - **Project**: FlowCast - AI-Powered Smart Traffic Flow Prediction Platform
 - **Lead Developer**: Mohnish Sahu
+- **Academic Context**: Senior Undergraduate Capstone Project in Computer Science & Artificial Intelligence
+- **License**: MIT Open Source License

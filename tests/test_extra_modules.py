@@ -64,3 +64,28 @@ def test_accident_risk_classifier_artifact():
     assert set(preds).issubset({0, 1})
     assert ((probs >= 0.0) & (probs <= 1.0)).all()
 
+
+def test_congestion_classifier_probabilities_sum_to_one():
+    """Verify that multi-class congestion probabilities normalize to 1.0."""
+    path = Path("models/congestion_classifier.joblib")
+    if not path.exists():
+        pytest.skip("models/congestion_classifier.joblib not found.")
+
+    bundle = joblib.load(path)
+    sample = np.zeros((5, len(PREDICTOR_FEATURES)))
+    probs = bundle["model"].predict_proba(sample)
+    sums = probs.sum(axis=1)
+    np.testing.assert_allclose(sums, 1.0, atol=1e-5)
+
+
+def test_extra_modules_results_file():
+    """Verify docs/extra_modules_results.csv contains evaluation results for all modules."""
+    path = Path("docs/extra_modules_results.csv")
+    assert path.exists(), "docs/extra_modules_results.csv missing."
+    import pandas as pd
+    df = pd.read_csv(path)
+    assert len(df) == 3
+    assert "Task" in df.columns
+    assert "Primary_Metric" in df.columns
+
+
