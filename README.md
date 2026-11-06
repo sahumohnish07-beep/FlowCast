@@ -75,10 +75,15 @@ FlowCast/
   - Forecast evaluation plot saved to `docs/images/actual_vs_predicted_baseline.png`
   - Best model artifact (`XGBoost`, Test MAE: 146.60, R²: 0.9869) serialized to `models/best_baseline_model.joblib`
   - Automated unit test coverage in `tests/test_baseline_models.py`
-- [ ] **Phase 4: Deep Learning & Sequence Modeling (PyTorch)**
-  - Sequence data loader construction (sliding window temporal sequences)
-  - Recurrent neural networks (LSTM / GRU) or Temporal Convolutional Networks
-  - Multi-horizon traffic forecasting and training checkpoints
+- [x] **Phase 4: Deep Learning & Sequence Modeling (PyTorch LSTM & GRU)**
+  - PyTorch sliding-window temporal data loaders (`seq_len=24`, `horizon=6`) in `src/models/lstm.py`
+  - Built `TrafficLSTM` and `TrafficGRU` architectures predicting multi-horizon traffic volume (t+1 through t+6)
+  - Trained with feature standardization, Huber loss, Adam optimizer, LR scheduling, and Early Stopping
+  - Training loss convergence curves saved to `docs/images/lstm_training_loss.png`
+  - Multi-horizon forecast overlay plot saved to `docs/images/lstm_gru_forecast.png`
+  - Evaluated on test set ($h=1$ and 6h average) and integrated into leaderboard in `docs/baseline_results.csv`
+  - Best sequence model weights (`best_traffic_gru.pt`, 46.4 KB) and feature scaler (`scaler.joblib`) saved to `models/`
+  - Unit tests verified passing in `tests/test_deep_learning.py`
 - [ ] **Phase 5: Model Evaluation, Comparison & Serialization**
   - Cross-model performance comparison (MAE, RMSE, MAPE, R², F1-score)
   - Model serialization, metadata logging, and inference pipeline packaging
@@ -109,18 +114,25 @@ FlowCast/
 
 ---
 
-## 📈 Phase 3: Baseline Model Evaluation Results
+## 📈 Model Performance Leaderboard & Evaluation Results
 
-Models trained on 2012–2016 historical data and evaluated strictly on chronologically held-out 2018 test observations ($N = 6,552$):
+All models were trained on historical 2012–2016 observations and evaluated strictly on chronologically held-out 2018 test observations ($N = 6,552$):
 
-| Model Architecture | Test MAE (veh/hr) | Test RMSE (veh/hr) | Test $R^2$ | Val MAE (veh/hr) | Val $R^2$ | Top Performer |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **XGBoost Regressor** | **146.60** | **226.48** | **0.9869** | **152.77** | **0.9855** | 🏆 Best Model |
-| **Random Forest Regressor** | 154.04 | 242.31 | 0.9850 | 159.93 | 0.9839 | Strong Baseline |
-| **Linear Regression (Ridge)** | 270.12 | 385.16 | 0.9620 | 272.56 | 0.9625 | Linear Baseline |
+| Model Architecture | Test MAE (veh/hr) | Test RMSE (veh/hr) | Test $R^2$ | Val MAE (veh/hr) | Val $R^2$ | Model Category | Status |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **XGBoost Regressor** | **146.60** | **226.48** | **0.9869** | **152.77** | **0.9855** | Gradient Boosted Trees | 🏆 Overall Top Performer |
+| **Random Forest Regressor** | 154.04 | 242.31 | 0.9850 | 159.93 | 0.9839 | Bagged Decision Trees | Strong Tree Baseline |
+| **Traffic GRU (1h step)** | 167.75 | 250.82 | 0.9839 | 177.28 | 0.9815 | Deep Recurrent (PyTorch) | ⚡ Best Sequence Model |
+| **Traffic LSTM (1h step)** | 173.99 | 259.29 | 0.9828 | 180.34 | 0.9811 | Deep Recurrent (PyTorch) | Multi-Horizon Forecaster |
+| **Linear Regression (Ridge)** | 270.12 | 385.16 | 0.9620 | 272.56 | 0.9625 | Regularized Linear | Classical Baseline |
+
+### Multi-Horizon Sequence Forecasting Capability (t+1 through t+6 hours)
+Both PyTorch recurrent networks take a 24-hour historical window and forecast traffic simultaneously for the next 1 to 6 hours into the future:
+- **Traffic GRU 6-Hour Average**: Test MAE = $205.84\text{ veh/hr}$, RMSE = $313.98\text{ veh/hr}$, $R^2 = 0.9747$
+- **Traffic LSTM 6-Hour Average**: Test MAE = $207.60\text{ veh/hr}$, RMSE = $317.22\text{ veh/hr}$, $R^2 = 0.9742$
 
 > [!NOTE]
-> The top model artifact has been serialized to `models/best_baseline_model.joblib`. Detailed evaluation predictions and time-series overlays are preserved in `docs/images/actual_vs_predicted_baseline.png` and `docs/baseline_results.csv`.
+> Serialized models and scalers are stored in `models/` (`best_baseline_model.joblib`, `best_traffic_gru.pt`, and `scaler.joblib`). Training curves and multi-horizon prediction visualizations are cataloged in `docs/images/lstm_training_loss.png` and `docs/images/lstm_gru_forecast.png`.
 
 ---
 

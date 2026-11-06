@@ -68,3 +68,4 @@ def test_best_model_artifact_loading():
     preds = bundle["model"].predict(X_sample)
     assert len(preds) == 10
     assert (preds >= 0).all()
+
