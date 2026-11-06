@@ -107,3 +107,4 @@ def test_saved_weights_and_scaler_artifacts():
     scaler = joblib.load(scaler_path)
     assert hasattr(scaler, "mean_")
     assert len(scaler.mean_) == in_dim
+

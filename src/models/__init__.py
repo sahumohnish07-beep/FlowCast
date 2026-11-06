@@ -10,6 +10,13 @@ from src.models.baseline import (
     train_random_forest,
     train_xgboost,
 )
+from src.models.extra_modules import (
+    PREDICTOR_FEATURES,
+    run_extra_modules_pipeline,
+    train_accident_risk_module,
+    train_congestion_module,
+    train_travel_time_module,
+)
 from src.models.lstm import (
     SEQUENCE_FEATURES,
     TrafficGRU,
@@ -21,6 +28,7 @@ from src.models.lstm import (
 __all__ = [
     "FEATURE_COLUMNS",
     "TARGET_COLUMN",
+    "PREDICTOR_FEATURES",
     "SEQUENCE_FEATURES",
     "TrafficLSTM",
     "TrafficGRU",
@@ -32,4 +40,8 @@ __all__ = [
     "train_xgboost",
     "run_baseline_training",
     "run_deep_learning_pipeline",
+    "train_congestion_module",
+    "train_travel_time_module",
+    "train_accident_risk_module",
+    "run_extra_modules_pipeline",
 ]

@@ -1,0 +1,4 @@
+Task,Primary_Metric,Score,Aux_Metric,Aux_Score
+Congestion Classification,F1_Macro,0.94,ROC_AUC,0.9926
+Corridor Travel Time Estimation,MAE_Minutes,0.098,R2,0.9534
+Accident Risk Detection (SMOTE),F1_Score,0.8953,ROC_AUC,0.9897

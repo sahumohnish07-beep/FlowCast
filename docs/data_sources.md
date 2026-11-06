@@ -82,7 +82,27 @@ This document outlines the source provenance, collection methodologies, schemas,
 
 ---
 
-## 4. Pipeline Reproducibility
+## 4. Derived Modeling Targets & Synthetic Ground Truth Documentation
+
+### A. Congestion Level Thresholds
+- **Low Flow (Class 0)**: Traffic volume $< 2,500\text{ veh/hr}$ (Free-flow speed maintained, uninhibited maneuverability).
+- **Medium Flow (Class 1)**: Traffic volume between $2,500$ and $4,500\text{ veh/hr}$ (Stable traffic, moderate density).
+- **High / Congested (Class 2)**: Traffic volume $> 4,500\text{ veh/hr}$ (Corridor bottleneck approaching or exceeding 6,000 veh/hr lane capacity).
+
+### B. Travel Time Estimation (BPR Function)
+Corridor travel time is modeled using the Highway Capacity Manual's Bureau of Public Roads (BPR) relationship calibrated for the 15-mile I-94 corridor:
+$$T = T_0 \cdot \left[1 + \alpha \cdot \left(\frac{V}{C}\right)^\beta\right]$$
+where $T_0 = 13.85\text{ minutes}$ (free-flow travel time at 65 mph), $C = 6,000\text{ veh/hr}$, $\alpha = 0.15$, $\beta = 4.0$.
+
+### C. Accident Risk Labeling & Provenance
+Because point-source accident geocaches for specific highway detector loops require proprietary police dispatch records, FlowCast formulates a continuous hazard probability index grounded in empirical transportation safety literature:
+$$\text{Risk} = 0.40 \cdot \left(\frac{V}{C}\right) + 0.35 \cdot (\text{Severity}_{\text{weather}}) + 0.15 \cdot (\text{Night}) + 0.10 \cdot (\text{Holiday})$$
+- **High-Risk Threshold**: An index score $\ge 0.60$ marks hazardous driving conditions (representing the top $\sim 19\%$ most dangerous hours).
+- **Class Imbalance Resolution**: Addressed using Synthetic Minority Over-sampling Technique (SMOTE) on training partitions to equalize representation and boost incident recall.
+
+---
+
+## 5. Pipeline Reproducibility
 
 To re-run and verify the download and synthesis of all raw datasets from scratch:
 

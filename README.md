@@ -84,9 +84,13 @@ FlowCast/
   - Evaluated on test set ($h=1$ and 6h average) and integrated into leaderboard in `docs/baseline_results.csv`
   - Best sequence model weights (`best_traffic_gru.pt`, 46.4 KB) and feature scaler (`scaler.joblib`) saved to `models/`
   - Unit tests verified passing in `tests/test_deep_learning.py`
-- [ ] **Phase 5: Model Evaluation, Comparison & Serialization**
-  - Cross-model performance comparison (MAE, RMSE, MAPE, R², F1-score)
-  - Model serialization, metadata logging, and inference pipeline packaging
+- [x] **Phase 5: Extra Prediction Modules (Congestion, Travel Time, Accident Risk)**
+  - Congestion Level Classifier (`src/models/extra_modules.py`) achieving 94.28% Accuracy, 0.9400 Macro F1, and 0.9926 ROC-AUC
+  - Corridor Travel Time Estimator based on BPR speed-flow physics achieving 0.098 min MAE and 0.9534 R²
+  - High Accident Risk Classifier with SMOTE class imbalance handling achieving 0.8953 F1, 92.77% Recall, and 0.9897 ROC-AUC
+  - Serialized model artifacts saved in `models/` (`congestion_classifier.joblib`, `travel_time_model.joblib`, `accident_risk_classifier.joblib`)
+  - Diagnostic visualizations saved to `docs/images/` (`congestion_confusion_matrix.png`, `travel_time_predictions.png`, `accident_risk_roc_curve.png`)
+  - Test suite coverage verified with 20 passing tests in `tests/test_extra_modules.py`
 - [ ] **Phase 6: REST API Development (FastAPI)**
   - Async FastAPI endpoints for single-point and batch predictions
   - Pydantic input validation and health check endpoints
@@ -131,8 +135,16 @@ Both PyTorch recurrent networks take a 24-hour historical window and forecast tr
 - **Traffic GRU 6-Hour Average**: Test MAE = $205.84\text{ veh/hr}$, RMSE = $313.98\text{ veh/hr}$, $R^2 = 0.9747$
 - **Traffic LSTM 6-Hour Average**: Test MAE = $207.60\text{ veh/hr}$, RMSE = $317.22\text{ veh/hr}$, $R^2 = 0.9742$
 
+### Specialized Operational Prediction Modules (Phase 5)
+
+| Operational Task | Prediction Target | Model Architecture | Primary Evaluation Metric | Secondary Metric | Artifact Path |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **Congestion Classification** | Low / Medium / High | XGBClassifier | **Macro F1: 0.9400** (Acc: 94.28%) | ROC-AUC: 0.9926 | `models/congestion_classifier.joblib` |
+| **Corridor Travel Time** | Minutes (15-mile section) | XGBRegressor + BPR | **MAE: 0.098 min** (5.9 sec error) | $R^2: 0.9534$ | `models/travel_time_model.joblib` |
+| **High Accident Risk Detection** | Binary Hazardous Alert | XGBClassifier + SMOTE | **F1: 0.8953** (Recall: 92.77%) | ROC-AUC: 0.9897 | `models/accident_risk_classifier.joblib` |
+
 > [!NOTE]
-> Serialized models and scalers are stored in `models/` (`best_baseline_model.joblib`, `best_traffic_gru.pt`, and `scaler.joblib`). Training curves and multi-horizon prediction visualizations are cataloged in `docs/images/lstm_training_loss.png` and `docs/images/lstm_gru_forecast.png`.
+> Serialized models and scalers are stored in `models/` (`best_baseline_model.joblib`, `best_traffic_gru.pt`, `congestion_classifier.joblib`, `travel_time_model.joblib`, `accident_risk_classifier.joblib`, and `scaler.joblib`). All diagnostic plots and evaluation metrics are cataloged in `docs/images/` and `docs/extra_modules_results.csv`.
 
 ---
 
