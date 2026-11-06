@@ -68,10 +68,13 @@ FlowCast/
   - Multi-task targets modeled: continuous `traffic_volume`, categorical `congestion_level`, BPR corridor `travel_time_min`, and localized `accident_risk_index`
   - Chronological time-based data split saved to `data/processed/`: Train (37,071 rows, 2012–2016), Val (8,760 rows, 2017), Test (6,552 rows, 2018)
   - Automated test coverage via `tests/test_preprocessing.py`
-- [ ] **Phase 3: Classical & Tree-Based Modeling (XGBoost / Scikit-Learn)**
-  - Baseline linear/ridge models
-  - XGBoost regressors and classifiers for traffic volume and congestion severity
-  - Hyperparameter tuning and feature importance analysis
+- [x] **Phase 3: Baseline Models (Linear Regression, Random Forest, XGBoost)**
+  - End-to-end training, cross-validation, and evaluation pipeline in `src/models/baseline.py`
+  - Evaluated with strict chronological metrics (MAE, RMSE, R²) on held-out 2018 test data
+  - Metric comparisons saved to `docs/baseline_results.csv`
+  - Forecast evaluation plot saved to `docs/images/actual_vs_predicted_baseline.png`
+  - Best model artifact (`XGBoost`, Test MAE: 146.60, R²: 0.9869) serialized to `models/best_baseline_model.joblib`
+  - Automated unit test coverage in `tests/test_baseline_models.py`
 - [ ] **Phase 4: Deep Learning & Sequence Modeling (PyTorch)**
   - Sequence data loader construction (sliding window temporal sequences)
   - Recurrent neural networks (LSTM / GRU) or Temporal Convolutional Networks
@@ -103,6 +106,21 @@ FlowCast/
   - **Train**: October 2012 – December 2016 (37,071 rows, $\sim 71\%$)
   - **Validation**: January 2017 – December 2017 (8,760 rows, $\sim 17\%$)
   - **Test**: January 2018 – September 2018 (6,552 rows, $\sim 12\%$)
+
+---
+
+## 📈 Phase 3: Baseline Model Evaluation Results
+
+Models trained on 2012–2016 historical data and evaluated strictly on chronologically held-out 2018 test observations ($N = 6,552$):
+
+| Model Architecture | Test MAE (veh/hr) | Test RMSE (veh/hr) | Test $R^2$ | Val MAE (veh/hr) | Val $R^2$ | Top Performer |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **XGBoost Regressor** | **146.60** | **226.48** | **0.9869** | **152.77** | **0.9855** | 🏆 Best Model |
+| **Random Forest Regressor** | 154.04 | 242.31 | 0.9850 | 159.93 | 0.9839 | Strong Baseline |
+| **Linear Regression (Ridge)** | 270.12 | 385.16 | 0.9620 | 272.56 | 0.9625 | Linear Baseline |
+
+> [!NOTE]
+> The top model artifact has been serialized to `models/best_baseline_model.joblib`. Detailed evaluation predictions and time-series overlays are preserved in `docs/images/actual_vs_predicted_baseline.png` and `docs/baseline_results.csv`.
 
 ---
 

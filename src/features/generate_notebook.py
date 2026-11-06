@@ -248,3 +248,4 @@ def create_eda_notebook(output_path: str | Path = "notebooks/01_eda.ipynb") -> N
 
 if __name__ == "__main__":
     create_eda_notebook()
+
