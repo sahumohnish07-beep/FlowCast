@@ -174,3 +174,4 @@ class HealthResponse(BaseModel):
     environment: str
     models_loaded: dict[str, bool]
     timestamp: str
+

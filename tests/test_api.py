@@ -121,3 +121,4 @@ def test_validation_error_on_invalid_input(client: TestClient):
     }
     response = client.post("/predict/traffic", json=invalid_payload)
     assert response.status_code == 422
+

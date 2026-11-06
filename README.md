@@ -97,10 +97,12 @@ FlowCast/
   - Validated with robust Pydantic schemas in `src/api/schemas.py` and auto-generated OpenAPI documentation
   - Rule-based operational decision engine providing tactical guidance for traffic management authorities
   - Automated unit test suite verified with 7 passing tests in `tests/test_api.py` (27 total tests passing repository-wide)
-- [ ] **Phase 7: Interactive Dashboard & Geospatial Visualization**
-  - Streamlit dashboard layout with multi-page navigation
-  - Folium interactive road network maps with traffic heatmaps
-  - Plotly time-series visualizers for predicted vs. actual traffic flows
+- [x] **Phase 7: Interactive Dashboard & Geospatial Visualization**
+  - Streamlit web interface implemented in `dashboard/app.py` with modern responsive styling and dual inference execution modes
+  - 6 dedicated analytics tabs: Overview & KPIs, Multi-Horizon 6-Hour Forecast Ribbon, Live Folium Highway Network Map, Accident Risk Diagnostics, Operational Recommendations Panel, and Model Leaderboard
+  - Dynamic user sidebar inputs: simulation date, hour slider, temperature, precipitation, relative humidity, wind speed, holiday status, and historical lag volume sliders
+  - Seamless FastAPI client integration with graceful, zero-downtime direct fallback loading serialized model bundles from `models/`
+  - High-resolution dashboard visual previews saved to `docs/images/` (`dashboard_overview.png`, `dashboard_forecast.png`, `dashboard_map.png`)
 - [ ] **Phase 8: End-to-End System Testing & Verification**
   - Automated unit and integration tests via pytest
   - System verification, load testing, and final documentation polish
@@ -168,6 +170,42 @@ FlowCast provides high-throughput async inference endpoints documented with Open
 ### Launching the Backend Server
 ```bash
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+---
+
+## 🖥️ Streamlit Interactive Traffic Dashboard
+
+FlowCast includes an enterprise-grade Streamlit web console (`dashboard/app.py`) for traffic operators, municipal engineers, and commuters.
+
+### Features & Tabs
+1. **Overview & KPIs**: Real-time traffic volume with hourly delta indicator, congestion tier badge with confidence score, corridor travel time with dynamic delay estimation, and accident risk likelihood indicator. Includes a diurnal traffic curve overlay comparing historical averages against the current real-time forecast.
+2. **6-Hour Multi-Horizon Forecast**: Sequence forecast ribbon plotting upcoming hourly volume ($t+1$ to $t+6$) with expanding 95% confidence bounds, paired with a tabular breakdown of anticipated transit speeds and congestion categories.
+3. **Live Highway Corridor Map**: Interactive Folium GIS map depicting the Interstate 94 corridor with dynamic color-coded congestion tiers (Green = Low Flow, Yellow = Medium Flow, Red = High Congestion) and clickable ATR detector station telemetry popups.
+4. **Accident Risk Diagnostics**: Visual crash likelihood gauge, primary environmental hazard flags, and a horizontal bar chart quantifying contributing risk factor weights.
+5. **TMC Operational Advisories**: Rule-based tactical recommendations for traffic management centers (adaptive signal timing, freeway diversion DMS messaging, ramp metering rates, and incident patrol dispatch).
+6. **Model Leaderboard**: Interactive benchmark tables and comparative bar charts contrasting Test MAE and $R^2$ across all trained models.
+
+### Visual Previews
+| Overview & KPIs | Multi-Horizon Forecast |
+| :---: | :---: |
+| ![Dashboard Overview](docs/images/dashboard_overview.png) | ![Dashboard Forecast](docs/images/dashboard_forecast.png) |
+
+| Live Highway Corridor Map |
+| :---: |
+| ![Live Highway Map](docs/images/dashboard_map.png) |
+
+### Running the Complete Stack (API + Dashboard)
+FlowCast can be operated in dual mode:
+- **Connected Mode (Recommended)**: Runs both the FastAPI backend and Streamlit frontend in separate terminals.
+- **Direct Mode**: The dashboard can also run standalone without FastAPI; it will detect backend status and automatically load local models directly from `models/`.
+
+```bash
+# Terminal 1: Launch FastAPI Backend Server
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Terminal 2: Launch Streamlit Web Dashboard
+streamlit run dashboard/app.py
 ```
 
 ---
