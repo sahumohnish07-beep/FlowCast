@@ -46,14 +46,21 @@ data/processed/*.csv
 *.tar.gz
 *.7z
 
-# Model binaries and checkpoints
+# Model binaries and checkpoints (development checkpoints and large weights excluded)
 models/*.pkl
-models/*.joblib
-models/*.pt
 models/*.pth
 models/*.bin
 models/*.onnx
+models/*_checkpoint*.pt
 !models/.gitkeep
+
+# Tracked runtime production model artifacts (compact, ~3MB total for cloud deployment)
+!models/best_baseline_model.joblib
+!models/best_traffic_gru.pt
+!models/congestion_classifier.joblib
+!models/travel_time_model.joblib
+!models/accident_risk_classifier.joblib
+!models/scaler.joblib
 
 # Unit test / coverage reports
 .coverage

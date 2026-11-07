@@ -250,3 +250,4 @@ FlowCast successfully delivers a production-grade, AI-driven traffic intelligenc
 5. Transportation Research Board, *Highway Capacity Manual (HCM)*, 6th Edition: A Guide for Multimodal Mobility Analysis, 2016.
 6. Minnesota Department of Transportation (MnDOT), *Traffic Forecasting & Analysis Guidelines*, St. Paul, MN.
 7. Open-Meteo Weather API Documentation, *Historical Weather Archive API*, 2026.
+

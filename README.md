@@ -4,6 +4,14 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.162%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.66%2B-FF4B4B.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Deployment](https://img.shields.io/badge/Deployment-Render%20%7C%20Streamlit-success.svg)](docs/deployment.md)
+
+> [!TIP]
+> 🚀 **Live Production Endpoints & Interactive Demos:**
+> - **Interactive Streamlit Web Dashboard:** [https://flowcast-traffic.streamlit.app](https://flowcast-traffic.streamlit.app)
+> - **FastAPI Live Microservice (Swagger Docs):** [https://flowcast-api.onrender.com/docs](https://flowcast-api.onrender.com/docs)
+> - **API Health Status Check:** [https://flowcast-api.onrender.com/health](https://flowcast-api.onrender.com/health)
+> - **Complete Operations & Cloud Deployment Guide:** [`docs/deployment.md`](docs/deployment.md)
 
 **FlowCast** is an intelligent, end-to-end traffic analytics and forecasting system designed to predict traffic volume, congestion indices, estimated travel times, and accident risk. By synthesizing IoT sensor readings, real-time meteorological conditions, and temporal/calendar indicators, FlowCast empowers urban planners, commuters, and traffic management centers with predictive intelligence.
 
@@ -149,6 +157,13 @@ FlowCast/
   - In-depth academic capstone report authored in `docs/project_report.md`
   - System architecture visual workflow embedded with Mermaid diagrams
   - Release tagging `v1.0` and final repository polish
+- [x] **Phase 9: Cloud Deployment & Production Operations**
+  - FastAPI containerized backend deployed to Render / Railway with dynamic `$PORT` binding (`uvicorn src.api.main:app --host 0.0.0.0 --port $PORT`)
+  - Automated `/health` check validation and platform environment variable orchestration
+  - Runtime model artifacts optimized and tracked in repository (<3.1 MB total footprint)
+  - Interactive Streamlit dashboard deployed to Streamlit Community Cloud with `st.secrets` integration and dual-mode zero-downtime offline fallback
+  - Comprehensive operations and hosting guide authored in `docs/deployment.md`
+  - Release tagging `v1.1` and synchronization to GitHub
 
 ---
 
@@ -309,6 +324,7 @@ docker compose up --build
 
 For full academic formulation, mathematical proofs, experimental loss progressions, and literature references, consult the dedicated submission report:
 - 📖 **Comprehensive Academic Project Report:** [`docs/project_report.md`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/project_report.md)
+- 🚀 **Production Cloud Deployment Guide:** [`docs/deployment.md`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/deployment.md)
 - 📊 **Baseline Model Results:** [`docs/baseline_results.csv`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/baseline_results.csv)
 - 🚦 **Operational Modules Results:** [`docs/extra_modules_results.csv`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/extra_modules_results.csv)
 - 🌐 **Data Source Specifications:** [`docs/data_sources.md`](file:///c:/Users/Mohnish%20Sahu/OneDrive/Desktop/FlowCast/docs/data_sources.md)

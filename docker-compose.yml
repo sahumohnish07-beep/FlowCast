@@ -51,3 +51,4 @@ services:
 networks:
   flowcast-net:
     driver: bridge
+

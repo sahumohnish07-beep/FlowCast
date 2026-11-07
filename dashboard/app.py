@@ -68,7 +68,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Resolve API Base URL from Streamlit secrets (Streamlit Community Cloud) or OS environment
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+try:
+    if hasattr(st, "secrets") and "API_BASE_URL" in st.secrets:
+        API_BASE_URL = str(st.secrets["API_BASE_URL"]).rstrip("/")
+except Exception:
+    pass
 
 
 # -----------------------------------------------------------------------------
@@ -98,7 +104,7 @@ def load_local_models():
 def check_api_health() -> bool:
     """Check whether FastAPI backend is responsive."""
     try:
-        r = requests.get(f"{API_BASE_URL}/health", timeout=1.5)
+        r = requests.get(f"{API_BASE_URL}/health", timeout=3.5)
         return r.status_code == 200
     except Exception:
         return False
@@ -237,7 +243,7 @@ volume_upper = 4650.0
 
 if api_online:
     try:
-        r = requests.post(f"{API_BASE_URL}/predict/traffic", json=payload_dict, timeout=2.0)
+        r = requests.post(f"{API_BASE_URL}/predict/traffic", json=payload_dict, timeout=3.5)
         if r.status_code == 200:
             res = r.json()
             pred_volume = res["predicted_traffic_volume"]
@@ -259,7 +265,7 @@ congestion_probs = {"Low": 0.20, "Medium": 0.65, "High": 0.15}
 
 if api_online:
     try:
-        r = requests.post(f"{API_BASE_URL}/predict/congestion", json=payload_dict, timeout=2.0)
+        r = requests.post(f"{API_BASE_URL}/predict/congestion", json=payload_dict, timeout=3.5)
         if r.status_code == 200:
             res = r.json()
             congestion_level = res["predicted_congestion_level"]
@@ -282,7 +288,7 @@ avg_speed = 54.5
 
 if api_online:
     try:
-        r = requests.post(f"{API_BASE_URL}/predict/travel-time", json=payload_dict, timeout=2.0)
+        r = requests.post(f"{API_BASE_URL}/predict/travel-time", json=payload_dict, timeout=3.5)
         if r.status_code == 200:
             res = r.json()
             travel_time = res["estimated_travel_time_min"]
@@ -304,7 +310,7 @@ accident_factors = ["Normal driving conditions"]
 
 if api_online:
     try:
-        r = requests.post(f"{API_BASE_URL}/predict/accident-risk", json=payload_dict, timeout=2.0)
+        r = requests.post(f"{API_BASE_URL}/predict/accident-risk", json=payload_dict, timeout=3.5)
         if r.status_code == 200:
             res = r.json()
             is_accident_risk = res["is_high_risk"]
@@ -632,7 +638,7 @@ with tabs[4]:
     recommendations_list = []
     if api_online:
         try:
-            r = requests.get(f"{API_BASE_URL}/recommendations?congestion_level={congestion_level}&accident_risk={str(is_accident_risk).lower()}&hour={selected_hour}", timeout=2.0)
+            r = requests.get(f"{API_BASE_URL}/recommendations?congestion_level={congestion_level}&accident_risk={str(is_accident_risk).lower()}&hour={selected_hour}", timeout=3.5)
             if r.status_code == 200:
                 recommendations_list = r.json()["recommendations"]
         except Exception:
